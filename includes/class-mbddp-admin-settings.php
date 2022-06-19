@@ -63,6 +63,11 @@ class Mbddp_Admin_settings {
 			'mbddp_message', // $option_name:string,
 			//array('') // $args:array
 		);
+		register_setting(
+			MBDDP_PLUGIN_SETTINGS_API_GROUP_ID, // $option_group:string,
+			'mbddp_logistic_mails', // $option_name:string,
+			//array('') // $args:array
+		);
 
 		/**
          * Settings Section
@@ -131,6 +136,25 @@ class Mbddp_Admin_settings {
                 'description'   => __( 'Write down your message/notice/instruction/note etc. that will describ why this is for to the customers.', 'mbddp' ),
                 "class"         => "regular-text",
                 "placeholder"   => "",
+                "ext"           => ""
+            ) // $args:array
+		);
+		add_settings_field(
+			"mbddp_logistic_mails_field_id", // $id:string,
+			__( "Logistic E-mail(s)", "mbddp" ), // $title:string,
+			array( $this, "logistic_mails_field_callback" ), // $callback:callable,
+			MBDDP_PLUGIN_SLUG, // $page:string,
+			"mbddp_section_id", // $section:string,
+			array(
+                'type'          => 'text',
+                'option_group'  => MBDDP_PLUGIN_SETTINGS_API_GROUP_ID,
+                'name'          => 'mbddp_logistic_mails',
+                "label_for"     => "mbddp_logistic_mails",
+                "label"         => "",
+                'value'         => ( @get_option( 'mbddp_logistic_mails' ) ) ? esc_attr( get_option( 'mbddp_logistic_mails' ) ) : '',
+                'description'   => __( 'Write down one or more logistic e-mails by comma ( , ) separated.', 'mbddp' ),
+                "class"         => "regular-text",
+                "placeholder"   => "e.g. test@test.com, test2@test.com",
                 "ext"           => ""
             ) // $args:array
 		);
@@ -231,6 +255,22 @@ class Mbddp_Admin_settings {
 		wp_editor( $content, $custom_editor_id, $args );
 		echo $description;
 
+	}
+	public function logistic_mails_field_callback( $args ) {
+		$label_for = $args['label_for'];
+        $label = $args['label'] ? $args['label'] . ': ' : '';
+        $ext = $args['ext'] ? '<i>' . $args['ext'] . '</i>' : '';
+        $class = $args['class'] ?: '';
+        $type = $args['type'] ?: 'text';
+        $placeholder = $args['placeholder'] ?: '';
+        $description = $args['description'] ? '<p class="description">' . $args['description'] . '</p>' : '';
+        $name = $args['name'];
+        $value = $args['value'];
+
+		echo '<label for="' . $label_for . '">
+            <input type="' . $type . '" name="' . $name . '" value="' . $value . '" id="' . $label_for . '" class="' . $class . '" placeholder="' . $placeholder . '" />
+        </label>' . $description;
+		
 	}
 
 }

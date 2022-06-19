@@ -19,8 +19,8 @@
     <?php settings_errors(); ?>
 
     <div id="poststuff">
-        <!-- <div id="post-body" class="metabox-holder columns-2"> -->
-        <div id="post-body" class="metabox-holder">
+        <div id="post-body" class="metabox-holder columns-2">
+        <!-- <div id="post-body" class="metabox-holder"> -->
             <div id="post-body-content">
                 <div class="metabox-sortables ui-sortable">
                     <div class="postbox">

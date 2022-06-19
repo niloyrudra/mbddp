@@ -21,6 +21,89 @@
  * @author     Niloy Rudra <niloyrudra4249@gmail.com>
  */
 class Mbddp_WC_Email {
+	/**
+	 * The current page_id of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      string    $page_id    The current page_id of the plugin.
+	 */
+	protected static $page_id;
+
+	/**
+	 * The current msg_position of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      string    $msg_position    The current msg_position of the plugin.
+	 */
+	protected static $msg_position;
+
+	/**
+	 * The current custom_msg of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      string    $custom_msg    The current custom_msg of the plugin.
+	 */
+	protected static $custom_msg;
+
+	/**
+	 * Define the core functionality of the plugin.
+	 *
+	 * Set the plugin name and the plugin version that can be used throughout the plugin.
+	 * Load the dependencies, define the locale, and set the hooks for the admin area and
+	 * the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+	public function __construct() {
+
+		self::$page_id = @get_option( 'mbddp_page_option' ) ? esc_html( get_option( 'mbddp_page_option' ) ) : null;
+		self::$msg_position = @get_option( 'mbddp_link_position' ) ? esc_html( get_option( 'mbddp_link_position' ) ) : '';
+		self::$custom_msg = @get_option( 'mbddp_message' ) ? esc_html( get_option( 'mbddp_message' ) ) : '';
+		
+	}
+
+	public function init() {
+		if( !self::$page_id ) return;
+
+		$position = self::msg_position ?: 'woocommerce_email_after_order_table';
+		$default_msg = self::custom_msg ?: __( 'Hey! Thanks for shopping with us. As a way of saying thanks, here’s a link to a page for selecting your desired delivery date.', 'mbddp' );
+
+		switch( $position ) {
+			case 'woocommerce_before_email_order' :
+				// self::content_before_email_order();
+				return self::content_before_email_order();
+				break;
+			case 'content_after_email_header' :
+				// self::content_after_email_header();
+				return self::content_after_email_header();
+				break;
+			case 'woocommerce_email_order_details' :
+				// self::content_in_email_order_details();
+				return self::content_in_email_order_details();
+				break;
+			case 'woocommerce_email_before_order_table' :
+				// self::content_before_email_table();
+				return self::content_before_email_table();
+				break;
+			case 'woocommerce_email_after_order_table' :
+				// self::content_after_email_table();
+				return self::content_after_email_table();
+				break;
+
+			case 'woocommerce_email_footer' :
+				// self::content_above_email_footer();
+				return self::content_above_email_footer();
+				break;
+
+			default:
+				// self::content_after_email_table();
+				return self::content_after_email_table();
+				break;
+		}
+	}
 
 	/*
 	* goes in theme functions.php or a custom plugin
@@ -88,14 +171,9 @@ class Mbddp_WC_Email {
 	public static function add_order_instruction_email( $order, $sent_to_admin ) {
   
 		if ( ! $sent_to_admin ) {
-	   
-		  if ( 'cod' == $order->payment_method ) {
-			// cash on delivery method
-			echo '<p><strong>Instructions:</strong> Full payment is due immediately upon delivery: <em>cash only, no exceptions</em>.</p>';
-		  } else {
-			// other methods (ie credit card)
-			echo '<p><strong>Instructions:</strong> Please look for "Madrigal Electromotive GmbH" on your next credit card statement.</p>';
-		  }
+			?>
+				<p><?php printf( __( '%s: %s', 'mbddp' ), self::$custom_msg, '<a href="' . get_permalink( self::$page_id ) . '">' . __( 'Please click here', 'mbddp' ) . '</a>' ); ?></p>
+			<?php
 		}
 	}
 	  
@@ -111,35 +189,46 @@ class Mbddp_WC_Email {
 		// if( 'customer_processing_order' == $email->id ){
 	
 			// Set here as you want your custom content (for customers and email notification related to processing orders only)
-			echo '<p class="some-class">Here goes your custom content… </p>';
+			// echo '<p class="some-class">Here goes your custom content… </p>';
 	
 		// }
+		if ( ! $sent_to_admin ) {
+			?>
+				<p><?php printf( __( '%s: %s', 'mbddp' ), self::$custom_msg, '<a href="' . get_permalink( self::$page_id ) . '">' . __( 'Please click here', 'mbddp' ) . '</a>' ); ?></p>
+			<?php
+		}
 	
 	}
 
 	// Content Before Email Content Table
 	public static function mm_email_before_order_table( $order, $sent_to_admin, $plain_text, $email ) {
 
-		// if( 'customer_processing_order' == $email->id ){
-	
-			// Set here as you want your custom content (for customers and email notification related to processing orders only)
-			echo '<p class="some-class">Here goes your custom content… </p>';
-	
-		// }
+		if ( ! $sent_to_admin ) {
+			?>
+				<p><?php printf( __( '%s: %s', 'mbddp' ), self::$custom_msg, '<a href="' . get_permalink( self::$page_id ) . '">' . __( 'Please click here', 'mbddp' ) . '</a>' ); ?></p>
+			<?php
+		}
 	
 	}
 
 	// Content After Email Content Table
 	public static function mm_email_after_order_table( $order, $sent_to_admin, $plain_text, $email ) { 
-		echo "<p>Hey! Thanks for shopping with us. As a way of saying thanks, here’s a coupon code for your next purchase: FRESH15</p>";
+		// echo "<p>Hey! Thanks for shopping with us. As a way of saying thanks, here’s a coupon code for your next purchase: FRESH15</p>";
+		if ( ! $sent_to_admin ) {
+		?>
+			<p><?php printf( __( '%s: %s', 'mbddp' ), self::$custom_msg, '<a href="' . get_permalink( self::$page_id ) . '">' . __( 'Please click here', 'mbddp' ) . '</a>' ); ?></p>
+		<?php
+		}
 	}
 	// Content Above Email footer
-	public static function mm_email_footer( $email ) { ?>
-		<p><?php printf( __( 'Thank you for shopping! Shop for more items using this link: %s', 'woocommerce' ), '<a href="' . get_permalink( wc_get_page_id( 'shop' ) ) . '">' . __( 'Shop', 'woocommerce' ) . '</a>' ); ?></p>
-	
-	<?php
+	public static function mm_email_footer( $email ) {
+		// if ( ! $sent_to_admin ) {
+		?>
+			<p><?php printf( __( '%s: %s', 'mbddp' ), self::$custom_msg, '<a href="' . get_permalink( self::$page_id ) . '">' . __( 'Please click here', 'mbddp' ) . '</a>' ); ?></p>
+		<?php
+		// }
 	}
 }
 
 $wc_email = new Mbddp_WC_Email();
-// $wc_email->settings_api_init();
+Mbddp_WC_Email::init();

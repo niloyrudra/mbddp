@@ -30,6 +30,19 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+
+    add_action( "admin_notices", "showing_admin_notice" );
+    function showing_admin_notice() {
+        echo "<div class='error'>";
+        echo "<p>";
+        echo "WC Delivery date Provider plugin neeeds WooCommerce to get activated.";
+        echo "</p>";
+        echo "</div>";
+    }
+    // exit;
+}
+
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
@@ -87,3 +100,4 @@ function run_mbddp() {
 
 }
 run_mbddp();
+// if( class_exists( "WC" ) || class_exists( "WC_Product" ) ) run_mbddp();
